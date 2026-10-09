@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+release/
+
+# Local previews and browser diagnostics
+.playwright-mcp/
+
+# Local configuration and working notes
+.env
+.env.*
+!.env.example
+.plan/

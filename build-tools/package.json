@@ -1,0 +1,7 @@
+{
+  "name": "hosts-manager-build-tools",
+  "private": true,
+  "devDependencies": {
+    "electron-builder": "26.0.12"
+  }
+}

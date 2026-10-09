@@ -1,0 +1,144 @@
+# Hosts Manager
+
+A desktop app for managing your hosts file on macOS, Windows, and Linux. Organize entries into groups, switch environments on and off, and edit your system entries from one place.
+
+Built with Electron, React, and TypeScript. The interface follows your system's light or dark appearance.
+
+## Features
+
+- Create groups and rename their titles inline.
+- Drag groups to reorder them, including above or below **System**. A drop indicator shows the insertion point. Keyboard users can reorder with **Alt + Up/Down**.
+- Enable or disable groups immediately, using their saved entries.
+- Edit **System** directly and save changes to your main hosts file.
+- Keep drafts while switching groups. Unsaved edits show a red sidebar dot and a badge beside the title.
+- Manage hosts globally from the sidebar or system tray.
+- Check GitHub Releases for newer versions and open the download page.
+
+## Installation
+
+Downloads, when published, are available on the [GitHub Releases page](https://github.com/Back-At-You-Inc/hosts-manager/releases).
+
+| Platform | Architecture | Downloads |
+| --- | --- | --- |
+| macOS | Apple Silicon / ARM64 | DMG or ZIP |
+| Windows | x64 | EXE installer or ZIP |
+| Linux | x64 | AppImage or tar.gz |
+
+**macOS:** Open the DMG and move **Hosts Manager.app** to Applications, or extract the ZIP. Releases are not Developer ID signed or notarized, so macOS may require approval in **System Settings → Privacy & Security**. The first protected hosts update asks to install an administrator helper; subsequent updates use that helper without repeating the password prompt.
+
+**Windows:** Run the EXE installer, or extract the complete ZIP and launch **Hosts Manager.exe**. Releases are not Authenticode signed, so Windows may show an unknown-publisher or SmartScreen warning. Protected hosts updates request permission through UAC.
+
+**Linux:** Make the AppImage executable and run it, or extract the tar.gz and run `hosts-manager`. A desktop environment is required. Protected hosts updates need PolicyKit (`pkexec`) and a desktop authentication agent. System tray availability depends on the desktop environment.
+
+## Using the app
+
+1. Create a group with the **+** button, then enter hosts entries in its text box.
+2. Click **Save** to save its text. If the group and global hosts management are enabled, the saved entries also update the hosts file.
+3. Toggle a group on or off to update its inclusion immediately. Toggles use saved text and preserve unsaved drafts.
+4. Drag groups into the desired order. Enabled entries are written in that order, before or after the **System** entries according to their position.
+5. Select **System** to edit the main hosts entries. Its **Save** button writes directly to the hosts file while preserving enabled group entries. System cannot be deleted or dragged.
+
+Only text edits require **Save**. Group names, order, enabled state, and deletion save automatically. Disabling **Hosts management** removes the app's managed sections and preserves the system entries.
+
+Example entries:
+
+```text
+# Local development
+127.0.0.1 app.local api.local
+::1 ipv6.local
+```
+
+Entries require an IPv4 or IPv6 address followed by one or more hostnames. Comments and blank lines are supported. Duplicate hostname resolution and DNS/application caching depend on the operating system.
+
+Text drafts remain in memory while you navigate between groups, but do not survive quitting. Save them before closing the app permanently or installing an update. Closing the window normally keeps the app in the tray; use **Quit** from the tray to exit. Quitting leaves the current hosts entries in place.
+
+## Hosts files and permissions
+
+The app updates `/etc/hosts` on macOS/Linux or `%SystemRoot%\System32\drivers\etc\hosts` on Windows. Before changing the file, it writes a backup beside it named `hosts.hosts-manager.bak`.
+
+Group entries use marked **Hosts Manager** sections. Group updates preserve entries outside those sections. Explicit System saves change the system entries after validation; stale edits are rejected rather than overwriting a newer external change. Launching the app alone does not modify your hosts file.
+
+The Electron interface runs without administrator privileges. Only protected file updates use elevated access. On macOS, a root-owned native helper is installed for the account that approved it and can update only `/etc/hosts`. It checks peer credentials, validates requests, rejects stale snapshots, creates a backup, and writes changes atomically. Other processes running as that authorized account share this hosts-file capability. A changed helper version requests permission to upgrade on its next protected update.
+
+Use **Remove administrator helper…** in the macOS tray menu to uninstall the helper. Removal requires administrator approval and leaves the hosts file unchanged. It will be installed again if a later protected update needs it.
+
+Saved workspace settings are kept in Electron's application-data directory under `hosts-manager`. Updates retain that location. Cancelled or failed file writes display an error; editor drafts remain available when a System save fails.
+
+## Development
+
+Requirements: **Node.js 22 or later**, npm, and a desktop environment. On macOS, install the Xcode command-line tools to compile the native helper.
+
+```sh
+git clone https://github.com/Back-At-You-Inc/hosts-manager.git
+cd hosts-manager
+npm ci
+npm start
+```
+
+`npm start` builds the renderer, Electron code, helper, and icons before launching the app. On macOS, it uses a locally ad-hoc-signed development bundle to display the **Hosts Manager** name and H icon in the Dock.
+
+```sh
+npm run check   # TypeScript checks
+npm test        # Hosts, permissions, update checks, and native helper tests
+npm run build   # Build without launching
+```
+
+Automated tests use mocks and temporary files; they do not change the real hosts file or trigger administrator prompts. Permission dialogs and installed helper behavior need testing on the target operating system.
+
+`preview/standalone.html` is a sample browser preview with mock IPC. Its controls never modify the real hosts file; use `npm start` for the desktop app.
+
+## Packaging
+
+Packaging uses **electron-builder**, installed separately from application dependencies. An internet connection is needed to install build tools and download platform runtimes.
+
+```sh
+npm run setup:packaging
+```
+
+Run the command for the target platform, preferably on that operating system:
+
+```sh
+npm run package -- mac
+npm run package -- windows
+npm run package -- linux
+```
+
+Packages are written to `release/`. macOS ARM64 packaging must run on an ARM64 Mac so the helper matches the app architecture. The release configuration includes the H icon, app identity, and Mac helper. Releases require no paid signing credentials and remain manually installed.
+
+## Updates and releases
+
+Packaged builds check the public GitHub release repository on startup and every six hours. **Check for updates** in the sidebar checks manually. A newer stable release with a compatible download shows **Update available**, with a **Download update** button that opens the release page. Downloading and replacing the app remain manual.
+
+`release-config.json` sets the public release repository. Packaging can override it using `HOSTS_MANAGER_RELEASE_REPOSITORY=owner/repository`. GitHub Actions configures it from the current repository automatically. No GitHub token is embedded in the app; private release repositories are not supported.
+
+To prepare the next version:
+
+```sh
+npm version 0.1.2 --no-git-tag-version
+git add package.json package-lock.json
+git commit -m "Release 0.1.2"
+git tag v0.1.2
+git push origin master
+git push origin v0.1.2
+```
+
+The tag must match the version in `package.json`. The [release workflow](.github/workflows/release.yml) tests and builds macOS ARM64, Windows x64, and Linux x64 on separate runners. After all builds succeed, it creates a **draft GitHub Release** containing six downloads and SHA-256 checksums. Review the draft and publish it to make the update visible to installed apps. Draft and prerelease versions are excluded from update notifications.
+
+A manual workflow run produces downloadable Actions artifacts without creating a release. The workflow uses GitHub's built-in token for the draft and uploads; signing secrets are not required. The hosted workflow and platform installers still need validation on their first run.
+
+Before installing an update, save drafts and fully quit the app through the tray. Replacing the app preserves saved groups and does not itself change the hosts file.
+
+## Project structure
+
+| Path | Purpose |
+| --- | --- |
+| `renderer/` | React interface and theme styles |
+| `electron/` | Desktop lifecycle, IPC, permissions, hosts operations, and update checks |
+| `shared/types.ts` | Shared TypeScript types |
+| `native/macos/` | Native macOS administrator helper |
+| `scripts/` | Build, development launch, packaging, and release scripts |
+| `test/` | Automated regression tests |
+| `assets/icons/` | H branding assets |
+| `electron-builder.cjs` | Platform packaging configuration |
+
+Vite bundles the renderer into `dist/renderer`. TypeScript compiles Electron code into `dist/electron`, using CommonJS output for the sandboxed preload. Build tooling also uses JavaScript scripts and a CommonJS builder configuration.

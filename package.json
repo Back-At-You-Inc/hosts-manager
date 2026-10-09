@@ -1,0 +1,34 @@
+{
+  "name": "hosts-manager",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Cross-platform hosts file group manager",
+  "main": "dist/electron/electron/main.js",
+  "scripts": {
+    "start": "npm run build && node scripts/start.mjs",
+    "build": "npm run check && tsc -p tsconfig.electron.json && npm run build:helper && npm run build:icons && vite build",
+    "dev": "npm start",
+    "test": "node --import tsx --test test/*.test.ts && npm run test:helper",
+    "check": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.electron.json",
+    "build:helper": "node scripts/build-helper.mjs",
+    "test:helper": "node scripts/test-helper.mjs",
+    "build:icons": "node scripts/build-icons.mjs",
+    "package": "npm run build && node scripts/package.mjs",
+    "setup:packaging": "npm install --prefix build-tools"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "electron": "^42.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  },
+  "productName": "Hosts Manager"
+}
