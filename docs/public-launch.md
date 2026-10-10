@@ -44,10 +44,9 @@ it does not authorize or perform that change.
   their embedded license; changing LICENSE does not update existing installers.
 - GitHub's automatic source archives remain visible on releases. The explicit app
   download links distinguish installers and portable apps.
-- Publish a Homebrew tap with the current ARM64 DMG version and checksum. The
-  example in docs/homebrew.md is not a live tap. Automating cask updates needs a
-  narrowly scoped cross-repository credential. Validate installation and upgrades
-  from a clean Mac before advertising the command.
+- The repository includes a Homebrew cask and automatically updates its version
+  and DMG checksum after stable releases. Validate the explicit-URL tap command
+  in docs/homebrew.md and clean Mac installation/upgrades after the repo is public.
 - Check installed app behavior on macOS ARM64, Windows x64, and Linux x64. Builds
   are unsigned; signing and notarization remain separate distribution decisions.
 

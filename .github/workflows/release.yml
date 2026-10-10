@@ -86,6 +86,13 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
           RELEASE_PRERELEASE: ${{ needs.version.outputs.prerelease }}
+      - name: Update Homebrew cask
+        if: needs.version.outputs.prerelease == 'false'
+        run: node scripts/update-homebrew-cask.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
       - name: Refresh README release badge
         if: needs.version.outputs.prerelease == 'false'
         continue-on-error: true

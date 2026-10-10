@@ -46,7 +46,7 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 
 **Linux:** Make the AppImage executable and run it, or extract the tar.gz and run `hosts-manager`. A desktop environment is required. Protected hosts updates need PolicyKit (`pkexec`) and a desktop authentication agent. System tray availability depends on the desktop environment.
 
-For Homebrew installation, see [setting up a Homebrew cask](docs/homebrew.md). A tap is not published yet.
+For macOS ARM64, a [Homebrew cask and installation instructions](docs/homebrew.md) are prepared for public launch. Stable releases update the cask automatically; unauthenticated installation requires this repository to be public.
 
 Releases upload packaged apps and checksums only. GitHub also automatically displays source-code archives, which cannot be hidden; use the **App downloads** links in the release notes to install the app.
 
