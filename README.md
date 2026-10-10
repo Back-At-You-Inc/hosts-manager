@@ -12,7 +12,7 @@ Available for macOS, Windows, and Linux, with light and dark themes that follow 
 [Download](https://github.com/Back-At-You-Inc/hosts-manager/releases/latest) · [Features](#features) · [Getting started](#using-the-app) · [Development](#development)
 
 [![Build](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/release.yml)
-[![Tests](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml)
+[![Tests](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml/badge.svg?branch=master&event=push)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml)
 [![Latest release](assets/readme/version.svg)](https://github.com/Back-At-You-Inc/hosts-manager/releases/latest)
 
 <img src="assets/readme/hosts-manager-banner.png" alt="Hosts Manager in dark mode, showing host groups, the inline group title, editor, and enable controls" width="100%" />
