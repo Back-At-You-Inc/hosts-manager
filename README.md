@@ -13,6 +13,7 @@ Available for macOS, Windows, and Linux, with light and dark themes that follow 
 
 [![Build](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/release.yml)
 [![Tests](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml/badge.svg?branch=master&event=push)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml)
+[![License: Proprietary](https://img.shields.io/badge/license-Proprietary-555)](LICENSE)
 [![Latest release](assets/readme/version.svg)](https://github.com/Back-At-You-Inc/hosts-manager/releases/latest)
 
 <img src="assets/readme/hosts-manager-banner.png" alt="Hosts Manager in dark mode, showing host groups, the inline group title, editor, and enable controls" width="100%" />
@@ -156,3 +157,9 @@ Before installing an update, save drafts and fully quit the app through the tray
 | `electron-builder.cjs` | Platform packaging configuration |
 
 Vite bundles the renderer into `dist/renderer`. TypeScript compiles Electron code into `dist/electron`, using CommonJS output for the sandboxed preload. Build tooling also uses JavaScript scripts and a CommonJS builder configuration.
+
+## License
+
+Hosts Manager is proprietary software owned by Back-At-You-Inc. Official compiled releases are free to use for personal and internal business purposes. Modifying or redistributing our code, creating derivative products, and public mirroring require written permission, except where applicable law or hosting-service terms provide otherwise. Viewing available source does not make this an open-source project.
+
+See [LICENSE](LICENSE) for the full terms. Third-party components retain their own licenses; see [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt) and the notices bundled with Electron.

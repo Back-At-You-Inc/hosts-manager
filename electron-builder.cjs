@@ -3,7 +3,7 @@ module.exports = {
   productName: 'Hosts Manager',
   directories: { output: 'release', buildResources: 'assets/icons' },
   artifactName: 'Hosts-Manager-${version}-${os}-${arch}.${ext}',
-  files: ['dist/electron/**', 'dist/renderer/**', 'assets/icons/**', 'release-config.json', 'package.json', '!node_modules/**'],
+  files: ['dist/electron/**', 'dist/renderer/**', 'assets/icons/**', 'release-config.json', 'package.json', 'LICENSE', 'THIRD_PARTY_NOTICES.txt', '!node_modules/**'],
   asar: true,
   npmRebuild: false,
   forceCodeSigning: false,
