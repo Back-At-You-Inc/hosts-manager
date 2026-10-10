@@ -1,35 +1,35 @@
 HOSTS MANAGER PROPRIETARY LICENSE
 
-Copyright (c) 2026 Back At You, Inc. All rights reserved.
+Copyright (c) 2026 Back At You, Inc. ("Back At You"). All rights reserved.
 
 1. Scope
 
 This license applies to the original Hosts Manager application, source code,
-documentation, and branding owned by Back At You, Inc (the "Software"). It does
+documentation, and branding owned by Back At You (the "Software"). It does
 not apply to third-party components, which retain their respective licenses.
 
 2. Permitted use
 
-Back At You, Inc grants you a non-exclusive, non-transferable license to download,
+Back At You grants you a non-exclusive, non-transferable license to download,
 install, and use official, unmodified compiled releases of the Software without
 charge for personal or internal business purposes. You may make copies needed
 for installation on your own devices and for backup. You may manage your own
 hosts entries, groups, and settings without restriction under this license.
 
-You may inspect source code made available by Back At You, Inc. Making source
+You may inspect source code made available by Back At You. Making source
 code available does not grant permission to modify it, create derivative works,
 or distribute it. Rights required by the terms of a hosting service, including
 GitHub's permitted viewing and platform forking, are not restricted here.
 
 Package managers may provide installation instructions and download official
-releases from Back At You, Inc's distribution locations. Temporary local caches
+releases from Back At You's distribution locations. Temporary local caches
 needed for installation are permitted; this does not authorize public mirrors
 or redistribution of the Software.
 
 3. Restrictions
 
 Except as expressly permitted above, by a separate written agreement with
-Back At You, Inc, or by applicable law, you may not:
+Back At You, or by applicable law, you may not:
 
 - modify, adapt, translate, or create derivative works of the Software;
 - redistribute, publish, sublicense, sell, rent, or host copies of the Software;
@@ -38,7 +38,7 @@ Back At You, Inc, or by applicable law, you may not:
 - remove or alter copyright, license, or ownership notices; or
 - use the Software's name, logos, or branding to imply endorsement.
 
-No other rights are granted. Request additional permissions from Back At You, Inc.
+No other rights are granted. Request additional permissions from Back At You.
 
 4. Termination
 
@@ -57,6 +57,6 @@ third-party notices and the licenses accompanying Electron and its runtime.
 TO THE EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED "AS IS",
 WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-BACK AT YOU, INC SHALL NOT BE LIABLE FOR DAMAGES ARISING FROM THE SOFTWARE OR
+BACK AT YOU SHALL NOT BE LIABLE FOR DAMAGES ARISING FROM THE SOFTWARE OR
 ITS USE, INCLUDING LOSS OF DATA, LOST PROFITS, OR INTERRUPTION OF BUSINESS.
 NOTHING IN THIS LICENSE EXCLUDES LIABILITY THAT CANNOT LAWFULLY BE EXCLUDED.
