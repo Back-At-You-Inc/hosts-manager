@@ -12,3 +12,7 @@ release/
 .env.*
 !.env.example
 .plan/
+
+# Python installer validation
+__pycache__/
+*.pyc

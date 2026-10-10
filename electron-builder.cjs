@@ -28,6 +28,7 @@ module.exports = {
     target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'tar.gz', arch: ['x64'] }],
     icon: 'assets/icons/app-icon.png',
     category: 'Utility',
-    executableName: 'hosts-manager'
+    executableName: 'hosts-manager',
+    extraResources: [{ from: 'assets/icons/app-icon.png', to: 'app-icon.png' }]
   }
 };

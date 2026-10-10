@@ -44,11 +44,11 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 
 **Windows:** Run `Hosts-Manager-<version>-win-x64-installer.exe` for the setup wizard. For the portable app, extract the complete `Hosts-Manager-<version>-win-x64-app.zip` and launch **Hosts Manager.exe**. Releases are not Authenticode signed, so Windows may show an unknown-publisher or SmartScreen warning. Protected hosts updates request permission through UAC.
 
-**Linux:** Make the AppImage executable and run it, or extract the tar.gz and run `hosts-manager`. A desktop environment is required. Protected hosts updates need PolicyKit (`pkexec`) and a desktop authentication agent. System tray availability depends on the desktop environment.
+**Linux:** Use the [Linux installer](docs/linux-install.md) to download, verify, and set up the app with an application-menu entry. Alternatively, make the AppImage executable and run it, or extract the tar.gz and run `hosts-manager`. A desktop environment is required. Protected hosts updates need PolicyKit (`pkexec`) and a desktop authentication agent. System tray availability depends on the desktop environment.
 
 For macOS ARM64, a [Homebrew cask and installation instructions](docs/homebrew.md) are prepared for public launch. Stable releases update the cask automatically; unauthenticated installation requires this repository to be public.
 
-Releases upload packaged apps and checksums only. GitHub also automatically displays source-code archives, which cannot be hidden; use the **App downloads** links in the release notes to install the app.
+Releases upload packaged apps, the Linux install script, and checksums. GitHub also automatically displays source-code archives, which cannot be hidden; use the **App downloads** links in the release notes to install the app.
 
 ## Using the app
 

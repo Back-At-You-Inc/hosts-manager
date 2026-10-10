@@ -19,7 +19,8 @@ test('release publishing waits for every upload and targets the tested commit', 
   const directory = await mkdtemp(join(tmpdir(), 'hosts-release-test-'));
   const script = resolve('scripts/create-release.mjs');
   try {
-    await mkdir(join(directory, 'release')); await mkdir(join(directory, 'bin'));
+    await mkdir(join(directory, 'release')); await mkdir(join(directory, 'bin')); await mkdir(join(directory, 'scripts'));
+    await writeFile(join(directory, 'scripts/install-linux.py'), await readFile(resolve('scripts/install-linux.py')));
     for (const suffix of ['mac-arm64.dmg', 'mac-arm64.zip', 'linux-x64.AppImage', 'linux-x64.tar.gz', 'win-x64-installer.exe', 'win-x64-app.zip']) await writeFile(join(directory, 'release', `Hosts-Manager-0.1.13-${suffix}`), suffix);
     await writeFile(join(directory, 'release/Hosts-Manager-0.1.13-source.zip'), 'source must not be uploaded');
     const log = join(directory, 'calls');
@@ -38,7 +39,7 @@ test('release publishing waits for every upload and targets the tested commit', 
     assert.ok(notes.includes('https://github.com/example/hosts-manager/releases/download/v0.1.13/Hosts-Manager-0.1.13-win-x64-installer.exe'));
     assert.ok(!notes.includes('source.zip'));
     assert.ok(calls[3].includes('--draft=false'));
-    assert.equal((await readFile(join(directory, 'release/SHA256SUMS'), 'utf8')).trim().split('\n').length, 6);
+    assert.equal((await readFile(join(directory, 'release/SHA256SUMS'), 'utf8')).trim().split('\n').length, 7);
     await writeFile(log, '');
     assert.throws(() => execFileSync(process.execPath, [script], { cwd: directory, env: { ...env, FAIL_UPLOAD: 'yes' }, stdio: 'pipe' }));
     assert.ok(!(await readFile(log, 'utf8')).includes('--draft=false'));

@@ -51,6 +51,9 @@ jobs:
       - name: Set package version
         run: node scripts/release-version.mjs --set
       - run: npm test
+      - name: Test Linux installer
+        if: runner.os == 'Linux'
+        run: python3 -m unittest discover -s test -p linux_installer_test.py
       - run: npm run setup:packaging
       - run: npm run package -- ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
