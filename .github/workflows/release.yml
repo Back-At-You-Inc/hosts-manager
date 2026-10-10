@@ -63,7 +63,7 @@ jobs:
             release/Hosts-Manager-*.AppImage
             release/Hosts-Manager-*.tar.gz
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
   release:
     name: Publish successful build
     needs: [version, build]
@@ -86,6 +86,14 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
           RELEASE_PRERELEASE: ${{ needs.version.outputs.prerelease }}
+      - name: Refresh README release badge
+        if: needs.version.outputs.prerelease == 'false'
+        continue-on-error: true
+        run: node scripts/update-release-badge.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
   notify:
     name: Notify
     needs: [version, build, release]

@@ -1,8 +1,23 @@
+<div align="center">
+
+<img src="assets/icons/app-icon.svg" width="64" height="64" alt="Hosts Manager icon" />
+
 # Hosts Manager
 
-A desktop app for managing your hosts file on macOS, Windows, and Linux. Organize entries into groups, switch environments on and off, and edit your system entries from one place.
+**Your hosts file, organized.**
 
-Built with Electron, React, and TypeScript. The interface follows your system's light or dark appearance.
+Manage hosts entries in groups, switch environments instantly, and edit your system hosts file from one desktop app.
+Available for macOS, Windows, and Linux, with light and dark themes that follow your system.
+
+[Download](https://github.com/Back-At-You-Inc/hosts-manager/releases/latest) · [Features](#features) · [Getting started](#using-the-app) · [Development](#development)
+
+[![Build](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/release.yml/badge.svg?branch=master)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/release.yml)
+[![Tests](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/Back-At-You-Inc/hosts-manager/actions/workflows/tests.yml)
+[![Latest release](assets/readme/version.svg)](https://github.com/Back-At-You-Inc/hosts-manager/releases/latest)
+
+<img src="assets/readme/hosts-manager-banner.png" alt="Hosts Manager in dark mode, showing host groups, the inline group title, editor, and enable controls" width="100%" />
+
+</div>
 
 ## Features
 
@@ -16,7 +31,7 @@ Built with Electron, React, and TypeScript. The interface follows your system's 
 
 ## Installation
 
-Downloads, when published, are available on the [GitHub Releases page](https://github.com/Back-At-You-Inc/hosts-manager/releases).
+Download the latest version from the [GitHub Releases page](https://github.com/Back-At-You-Inc/hosts-manager/releases).
 
 | Platform | Architecture | Downloads |
 | --- | --- | --- |
@@ -29,6 +44,8 @@ Downloads, when published, are available on the [GitHub Releases page](https://g
 **Windows:** Run the EXE installer, or extract the complete ZIP and launch **Hosts Manager.exe**. Releases are not Authenticode signed, so Windows may show an unknown-publisher or SmartScreen warning. Protected hosts updates request permission through UAC.
 
 **Linux:** Make the AppImage executable and run it, or extract the tar.gz and run `hosts-manager`. A desktop environment is required. Protected hosts updates need PolicyKit (`pkexec`) and a desktop authentication agent. System tray availability depends on the desktop environment.
+
+For Homebrew installation, see [setting up a Homebrew cask](docs/homebrew.md). A tap is not published yet.
 
 ## Using the app
 
@@ -111,13 +128,15 @@ Packaged builds check the public GitHub release repository on startup and every 
 
 `release-config.json` sets the public release repository. Packaging can override it using `HOSTS_MANAGER_RELEASE_REPOSITORY=owner/repository`. GitHub Actions configures it from the current repository automatically. No GitHub token is embedded in the app; private release repositories are not supported.
 
+The independent [Tests workflow](.github/workflows/tests.yml) runs TypeScript checks and regression tests on macOS, Windows, and Linux. The release version badge refreshes after a successful stable release.
+
 Every branch push runs the [build and release workflow](.github/workflows/release.yml). Each platform runs tests before packaging. A release is published automatically only after all three platform builds succeed and all six downloads plus SHA-256 checksums have been uploaded. Failed tests, builds, or uploads prevent publication. No manual publish step or version tag is required.
 
 The workflow generates a version from the manifest's major/minor version and its patch number plus the GitHub workflow run number. For example, a base of `0.1.1` and run number `12` produces `0.1.13` on `master`. Other branches publish prereleases such as `0.1.13-ci.12`, which are excluded from normal app update notifications. The computed version is embedded in the packages and used in artifact filenames and the release tag. Manifest changes remain inside the build; CI does not commit them back to the branch.
 
 Both branch pushes and manual workflow runs publish successful builds. Explicit `v*` tag pushes remain supported when the tag matches the manifest version. Rebuilding an already-published version refuses to replace its existing downloads. The release tag targets the exact commit tested by that workflow run.
 
-GitHub Actions also retains platform artifacts for 14 days. The workflow uses GitHub's built-in token to create the release and upload downloads. Signing secrets are not required. Its hosted execution and platform installers still need validation on their first run. The final Notify job uses BAY's shared build-notification workflow with inherited organization secrets. It sends one Zoho Cliq card per run with the version, platform list, build/release results, and artifact/release links, including when a stage fails.
+GitHub Actions also retains platform artifacts for 7 days. The workflow uses GitHub's built-in token to create the release and upload downloads. Signing secrets are not required. All three hosted platform builds have passed; installed app behavior still requires validation on each operating system. The final Notify job uses BAY's shared build-notification workflow with inherited organization secrets. It sends one Zoho Cliq card per run with the version, platform list, build/release results, and artifact/release links, including when a stage fails.
 
 Before installing an update, save drafts and fully quit the app through the tray. Replacing the app preserves saved groups and does not itself change the hosts file.
 
