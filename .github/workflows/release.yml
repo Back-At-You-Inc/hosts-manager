@@ -1,15 +1,31 @@
-name: Build release
+name: Build Hosts Manager
 on:
   push:
+    branches: ['**']
     tags: ['v*']
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: release-${{ github.ref }}
+  group: hosts-manager-build-${{ github.ref }}
   cancel-in-progress: false
 jobs:
+  version:
+    name: Prepare release version
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.release-version.outputs.version }}
+      prerelease: ${{ steps.release-version.outputs.prerelease }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: release-version
+        run: node scripts/release-version.mjs
   build:
+    name: Test and build ${{ matrix.target }}
+    needs: version
     strategy:
       fail-fast: false
       matrix:
@@ -24,18 +40,18 @@ jobs:
     env:
       HOSTS_MANAGER_RELEASE_REPOSITORY: ${{ github.repository }}
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      RELEASE_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-      - name: Validate release tag
-        if: startsWith(github.ref, 'refs/tags/')
-        run: node -e "if(process.env.GITHUB_REF_NAME !== 'v'+require('./package.json').version) throw Error('Tag must match package.json version')"
       - run: npm ci
-      - run: npm run setup:packaging
+      - name: Set package version
+        run: node scripts/release-version.mjs --set
       - run: npm test
+      - run: npm run setup:packaging
       - run: npm run package -- ${{ matrix.target }}
       - uses: actions/upload-artifact@v4
         with:
@@ -47,9 +63,10 @@ jobs:
             release/Hosts-Manager-*.AppImage
             release/Hosts-Manager-*.tar.gz
           if-no-files-found: error
-  draft-release:
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
+          retention-days: 14
+  release:
+    name: Publish successful build
+    needs: [version, build]
     runs-on: ubuntu-22.04
     permissions:
       contents: write
@@ -67,3 +84,22 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+          RELEASE_PRERELEASE: ${{ needs.version.outputs.prerelease }}
+  notify:
+    name: Notify
+    needs: [version, build, release]
+    if: always()
+    uses: Back-At-You-Inc/gh-actions/.github/workflows/build-notification.yml@v1
+    with:
+      product-name: Hosts Manager
+      build-info: |
+        Version=${{ needs.version.outputs.version }}
+        Platforms=macOS ARM64, Windows x64, Linux x64
+      statuses: |
+        Build & Push=${{ needs.version.result == 'success' && needs.build.result || needs.version.result }}
+        Release Tag=${{ needs.release.result }}
+      links: |
+        Artifacts=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        ${{ needs.release.result == 'success' && format('Release=https://github.com/{0}/releases/tag/v{1}', github.repository, needs.version.outputs.version) || '' }}
+    secrets: inherit

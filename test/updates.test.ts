@@ -29,3 +29,9 @@ test('offline checks, missing downloads, drafts, rate limits and missing configu
   for (const status of [403, 404, 429, 500]) assert.equal((await checkRelease(repo, '0.1.0', 'darwin', 'arm64', mock({}, status))).status, 'error');
   assert.equal((await checkRelease(repo, '0.1.0', 'darwin', 'arm64', (async () => { throw Error('offline'); }) as typeof fetch)).status, 'error');
 });
+
+test('an installed prerelease can detect a stable release of the same or newer core version', () => {
+  assert.ok(isNewerVersion('0.1.13', '0.1.13-ci.12'));
+  assert.ok(isNewerVersion('0.1.14', '0.1.13-ci.12'));
+  assert.equal(isNewerVersion('0.1.12', '0.1.13-ci.12'), false);
+});

@@ -111,20 +111,13 @@ Packaged builds check the public GitHub release repository on startup and every 
 
 `release-config.json` sets the public release repository. Packaging can override it using `HOSTS_MANAGER_RELEASE_REPOSITORY=owner/repository`. GitHub Actions configures it from the current repository automatically. No GitHub token is embedded in the app; private release repositories are not supported.
 
-To prepare the next version:
+Every branch push runs the [build and release workflow](.github/workflows/release.yml). Each platform runs tests before packaging. A release is published automatically only after all three platform builds succeed and all six downloads plus SHA-256 checksums have been uploaded. Failed tests, builds, or uploads prevent publication. No manual publish step or version tag is required.
 
-```sh
-npm version 0.1.2 --no-git-tag-version
-git add package.json package-lock.json
-git commit -m "Release 0.1.2"
-git tag v0.1.2
-git push origin master
-git push origin v0.1.2
-```
+The workflow generates a version from the manifest's major/minor version and its patch number plus the GitHub workflow run number. For example, a base of `0.1.1` and run number `12` produces `0.1.13` on `master`. Other branches publish prereleases such as `0.1.13-ci.12`, which are excluded from normal app update notifications. The computed version is embedded in the packages and used in artifact filenames and the release tag. Manifest changes remain inside the build; CI does not commit them back to the branch.
 
-The tag must match the version in `package.json`. The [release workflow](.github/workflows/release.yml) tests and builds macOS ARM64, Windows x64, and Linux x64 on separate runners. After all builds succeed, it creates a **draft GitHub Release** containing six downloads and SHA-256 checksums. Review the draft and publish it to make the update visible to installed apps. Draft and prerelease versions are excluded from update notifications.
+Both branch pushes and manual workflow runs publish successful builds. Explicit `v*` tag pushes remain supported when the tag matches the manifest version. Rebuilding an already-published version refuses to replace its existing downloads. The release tag targets the exact commit tested by that workflow run.
 
-A manual workflow run produces downloadable Actions artifacts without creating a release. The workflow uses GitHub's built-in token for the draft and uploads; signing secrets are not required. The hosted workflow and platform installers still need validation on their first run.
+GitHub Actions also retains platform artifacts for 14 days. The workflow uses GitHub's built-in token to create the release and upload downloads. Signing secrets are not required. Its hosted execution and platform installers still need validation on their first run. The final Notify job uses BAY's shared build-notification workflow with inherited organization secrets. It sends one Zoho Cliq card per run with the version, platform list, build/release results, and artifact/release links, including when a stage fails.
 
 Before installing an update, save drafts and fully quit the app through the tray. Replacing the app preserves saved groups and does not itself change the hosts file.
 

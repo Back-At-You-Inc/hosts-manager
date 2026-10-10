@@ -1,9 +1,11 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-const { version } = JSON.parse(await readFile('package.json', 'utf8'));
+const version = process.env.RELEASE_VERSION;
+if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-ci\.[1-9]\d*)?$/.test(version ?? '')) throw Error('A valid RELEASE_VERSION is required.');
+if (!/^[a-f0-9]{40}$/.test(process.env.GITHUB_SHA ?? '')) throw Error('A full build commit SHA is required.');
+const prerelease = process.env.RELEASE_PRERELEASE === 'true';
 const tag = `v${version}`;
-if (process.env.GITHUB_REF_NAME !== tag) throw Error('Release tag does not match package.json version.');
 const names = (await readdir('release')).filter(name => name.startsWith(`Hosts-Manager-${version}-`) && /\.(dmg|zip|exe|AppImage|tar\.gz)$/.test(name)).sort();
 for (const suffix of ['mac-arm64.dmg', 'mac-arm64.zip', 'linux-x64.AppImage', 'linux-x64.tar.gz', 'win-x64.exe', 'win-x64.zip']) {
   if (!names.includes(`Hosts-Manager-${version}-${suffix}`)) throw Error(`Missing release artifact: ${suffix}`);
@@ -16,7 +18,9 @@ await writeFile('release/release-notes.md', notes);
 let existing;
 try { existing = JSON.parse(execFileSync('gh', ['release', 'view', tag, '--json', 'isDraft'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })); } catch { /* Create the draft below; authentication errors will surface. */ }
 if (existing && !existing.isDraft) throw Error('Refusing to change an already-published release.');
-if (!existing) execFileSync('gh', ['release', 'create', tag, '--verify-tag', '--draft', '--title', `Hosts Manager ${version}`, '--notes-file', 'release/release-notes.md'], { stdio: 'inherit' });
+if (!existing) execFileSync('gh', ['release', 'create', tag, '--target', process.env.GITHUB_SHA, '--draft', `--prerelease=${prerelease}`, '--title', `Hosts Manager ${version}`, '--notes-file', 'release/release-notes.md'], { stdio: 'inherit' });
 if (existing) execFileSync('gh', ['release', 'edit', tag, '--title', `Hosts Manager ${version}`, '--notes-file', 'release/release-notes.md'], { stdio: 'inherit' });
 execFileSync('gh', ['release', 'upload', tag, ...names.map(name => `release/${name}`), 'release/SHA256SUMS', '--clobber'], { stdio: 'inherit' });
-console.log('Draft release is ready. Review the downloads on GitHub, then publish it to make update notifications available.');
+// Publish only after every artifact and checksum uploaded successfully.
+execFileSync('gh', ['release', 'edit', tag, '--draft=false', `--prerelease=${prerelease}`, ...(prerelease ? ['--latest=false'] : [])], { stdio: 'inherit' });
+console.log(`Published ${tag} with all six downloads and SHA256SUMS.`);

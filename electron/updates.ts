@@ -5,15 +5,16 @@ export function releaseRepository(value: unknown): string | undefined {
   const repo = value.trim().replace(/^https:\/\/github\.com\//, '').replace(/\.git$/, '').replace(/\/$/, '');
   return /^[A-Za-z0-9][A-Za-z0-9-]*\/[A-Za-z0-9_.-]+$/.test(repo) && !['.', '..'].includes(repo.split('/')[1]) ? repo : undefined;
 }
-function versionParts(value: string): bigint[] | undefined {
+function versionParts(value: string, allowPrerelease = false): bigint[] | undefined {
+  if (allowPrerelease) value = value.replace(/-[A-Za-z0-9.-]+(?=\+|$)/, '');
   const match = /^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:\+[A-Za-z0-9.-]+)?$/.exec(value);
   return match ? match.slice(1, 4).map(BigInt) : undefined;
 }
 export function isNewerVersion(candidate: string, current: string): boolean {
-  const next = versionParts(candidate), installed = versionParts(current);
+  const next = versionParts(candidate), installed = versionParts(current, true);
   if (!next || !installed) return false;
   for (let i = 0; i < 3; i++) { if (next[i] !== installed[i]) return next[i] > installed[i]; }
-  return false;
+  return /-/.test(current.split('+')[0]);
 }
 export async function checkRelease(repository: string | undefined, currentVersion: string, platform: string, arch: string, fetcher: typeof fetch = fetch): Promise<UpdateStatus> {
   const repo = releaseRepository(repository);
