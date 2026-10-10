@@ -38,7 +38,7 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 | --- | --- | --- |
 | macOS | Apple Silicon / ARM64 | DMG or ZIP |
 | Windows | x64 | `-installer.exe` (setup wizard) or `-app.zip` (portable app) |
-| Linux | x64 | AppImage or tar.gz |
+| Linux | x64 | Install script, AppImage, or tar.gz |
 
 **macOS:** Open the DMG and move **Hosts Manager.app** to Applications, or extract the ZIP. Releases are not Developer ID signed or notarized, so macOS may require approval in **System Settings → Privacy & Security**. The first protected hosts update asks to install an administrator helper; subsequent updates use that helper without repeating the password prompt.
 
@@ -49,6 +49,35 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 For macOS ARM64, a [Homebrew cask and installation instructions](docs/homebrew.md) are prepared for public launch. Stable releases update the cask automatically; unauthenticated installation requires this repository to be public.
 
 Releases upload packaged apps, the Linux install script, and checksums. GitHub also automatically displays source-code archives, which cannot be hidden; use the **App downloads** links in the release notes to install the app.
+
+### Linux install
+
+Requirements: Linux x64, Python 3.9 or newer, `curl`, and a graphical desktop. Once this repository is public and the installer release is available:
+
+```sh
+curl -fL --output install-linux.py https://github.com/Back-At-You-Inc/hosts-manager/releases/latest/download/install-linux.py
+python3 install-linux.py
+```
+
+Run as your desktop user **without sudo**. You can review the downloaded script before running it. It verifies the release archive checksum, installs the app under `~/.local/share/hosts-manager-app` (or `$XDG_DATA_HOME/hosts-manager-app`), adds a **Hosts Manager** application-menu entry, and creates `~/.local/bin/hosts-manager`. Launch from the application menu or run:
+
+```sh
+~/.local/bin/hosts-manager
+```
+
+Protected hosts-file changes require PolicyKit (`pkexec`) and a desktop authentication agent. Install missing system dependencies through your distribution's package manager. The installer itself does not modify the hosts file.
+
+**Upgrade:** save drafts, quit through the tray, then download and run the installer again. Saved groups remain in place.
+
+**Uninstall:**
+
+```sh
+python3 install-linux.py --uninstall
+```
+
+Uninstall preserves saved groups and existing hosts entries. To remove managed entries too, turn **Hosts management** off before uninstalling. See [Linux installer details](docs/linux-install.md) for specific-version installation and runtime requirements.
+
+The repository is currently private, so anonymous downloads are not yet available.
 
 ## Using the app
 
