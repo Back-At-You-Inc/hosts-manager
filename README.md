@@ -36,16 +36,18 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 | Platform | Architecture | Downloads |
 | --- | --- | --- |
 | macOS | Apple Silicon / ARM64 | DMG or ZIP |
-| Windows | x64 | EXE installer or ZIP |
+| Windows | x64 | `-installer.exe` (setup wizard) or `-app.zip` (portable app) |
 | Linux | x64 | AppImage or tar.gz |
 
 **macOS:** Open the DMG and move **Hosts Manager.app** to Applications, or extract the ZIP. Releases are not Developer ID signed or notarized, so macOS may require approval in **System Settings → Privacy & Security**. The first protected hosts update asks to install an administrator helper; subsequent updates use that helper without repeating the password prompt.
 
-**Windows:** Run the EXE installer, or extract the complete ZIP and launch **Hosts Manager.exe**. Releases are not Authenticode signed, so Windows may show an unknown-publisher or SmartScreen warning. Protected hosts updates request permission through UAC.
+**Windows:** Run `Hosts-Manager-<version>-win-x64-installer.exe` for the setup wizard. For the portable app, extract the complete `Hosts-Manager-<version>-win-x64-app.zip` and launch **Hosts Manager.exe**. Releases are not Authenticode signed, so Windows may show an unknown-publisher or SmartScreen warning. Protected hosts updates request permission through UAC.
 
 **Linux:** Make the AppImage executable and run it, or extract the tar.gz and run `hosts-manager`. A desktop environment is required. Protected hosts updates need PolicyKit (`pkexec`) and a desktop authentication agent. System tray availability depends on the desktop environment.
 
 For Homebrew installation, see [setting up a Homebrew cask](docs/homebrew.md). A tap is not published yet.
+
+Releases upload packaged apps and checksums only. GitHub also automatically displays source-code archives, which cannot be hidden; use the **App downloads** links in the release notes to install the app.
 
 ## Using the app
 

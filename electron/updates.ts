@@ -32,10 +32,10 @@ export async function checkRelease(repository: string | undefined, currentVersio
     if (typeof data.tag_name !== 'string' || !versionParts(data.tag_name) || data.draft || data.prerelease) throw new Error('The latest release must have a stable version tag such as v1.2.3.');
     if (!isNewerVersion(data.tag_name, currentVersion)) return { status: 'current', currentVersion, message: `Hosts Manager ${currentVersion} is up to date.` };
     const os = { darwin: 'mac', win32: 'win', linux: 'linux' }[platform];
-    const prefix = `Hosts-Manager-${data.tag_name.replace(/^v/, '')}-${os}-${arch}.`;
+    const prefix = `Hosts-Manager-${data.tag_name.replace(/^v/, '')}-${os}-${arch}`;
     const extensions = platform === 'darwin' ? ['dmg', 'zip'] : platform === 'win32' ? ['exe', 'zip'] : ['AppImage', 'tar.gz'];
     const assets = Array.isArray(data.assets) ? data.assets : [];
-    const compatible = assets.some(asset => asset && typeof asset.name === 'string' && extensions.some(extension => asset.name === prefix + extension));
+    const compatible = assets.some(asset => asset && typeof asset.name === 'string' && (extensions.some(extension => asset.name === `${prefix}.${extension}`) || (platform === 'win32' && ['-installer.exe', '-app.zip'].some(suffix => asset.name === prefix + suffix))));
     if (!compatible) return { status: 'error', currentVersion, message: 'A newer release exists, but its download for this computer is not available yet.' };
     return { status: 'available', currentVersion, version: data.tag_name.replace(/^v/, ''), url: `https://github.com/${repo}/releases/tag/${encodeURIComponent(data.tag_name)}`, message: `Hosts Manager ${data.tag_name.replace(/^v/, '')} is available.` };
   } catch (error) {

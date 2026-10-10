@@ -6,14 +6,17 @@ if (!/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-ci\.[1-9]\d*)?$/.test(version ?
 if (!/^[a-f0-9]{40}$/.test(process.env.GITHUB_SHA ?? '')) throw Error('A full build commit SHA is required.');
 const prerelease = process.env.RELEASE_PRERELEASE === 'true';
 const tag = `v${version}`;
-const names = (await readdir('release')).filter(name => name.startsWith(`Hosts-Manager-${version}-`) && /\.(dmg|zip|exe|AppImage|tar\.gz)$/.test(name)).sort();
-for (const suffix of ['mac-arm64.dmg', 'mac-arm64.zip', 'linux-x64.AppImage', 'linux-x64.tar.gz', 'win-x64.exe', 'win-x64.zip']) {
-  if (!names.includes(`Hosts-Manager-${version}-${suffix}`)) throw Error(`Missing release artifact: ${suffix}`);
+const suffixes = ['mac-arm64.dmg', 'mac-arm64.zip', 'linux-x64.AppImage', 'linux-x64.tar.gz', 'win-x64-installer.exe', 'win-x64-app.zip'];
+const files = await readdir('release');
+const names = suffixes.map(suffix => `Hosts-Manager-${version}-${suffix}`).sort();
+for (const name of names) {
+  if (!files.includes(name)) throw Error(`Missing release artifact: ${name}`);
 }
+const downloads = names.map(name => `- [${name}](https://github.com/${process.env.GH_REPO}/releases/download/${tag}/${name})`).join('\n');
 const hashes = [];
 for (const name of names) hashes.push(`${createHash('sha256').update(await readFile(`release/${name}`)).digest('hex')}  ${name}`);
 await writeFile('release/SHA256SUMS', hashes.join('\n') + '\n');
-const notes = `Hosts Manager ${version}\n\nUnsigned release with manual updates.\n\n- macOS ARM64: open the DMG and move Hosts Manager to Applications, or extract the ZIP. This app is not Developer ID signed or notarized; macOS may require approval in Privacy & Security.\n- Windows x64: run the EXE installer, or extract the complete ZIP. Windows may show an unknown-publisher or SmartScreen warning.\n- Linux x64: make the AppImage executable and run it, or extract the tar.gz and run hosts-manager. Administrator changes require pkexec and a desktop authentication agent.\n\nUse Check for updates in the sidebar to find newer releases. Download update opens the release page; installation is manual. Existing saved groups remain in your user-data directory. Save editor drafts and fully quit through the tray before replacing the app.\n\nSHA256SUMS contains checksums for all six downloads.\n`;
+const notes = `Hosts Manager ${version}\n\nUnsigned release with manual updates.\n\n## App downloads\n\n${downloads}\n\nThe Windows \`-installer.exe\` runs the setup wizard. The \`-app.zip\` contains the portable app; extract it and run Hosts Manager.exe.\n\n- macOS ARM64: open the DMG and move Hosts Manager to Applications, or extract the ZIP. This app is not Developer ID signed or notarized; macOS may require approval in Privacy & Security.\n- Windows x64: run the EXE installer, or extract the complete ZIP. Windows may show an unknown-publisher or SmartScreen warning.\n- Linux x64: make the AppImage executable and run it, or extract the tar.gz and run hosts-manager. Administrator changes require pkexec and a desktop authentication agent.\n\nUse Check for updates in the sidebar to find newer releases. Download update opens the release page; installation is manual. Existing saved groups remain in your user-data directory. Save editor drafts and fully quit through the tray before replacing the app.\n\nSHA256SUMS contains checksums for all six downloads.\n`;
 await writeFile('release/release-notes.md', notes);
 let existing;
 try { existing = JSON.parse(execFileSync('gh', ['release', 'view', tag, '--json', 'isDraft'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })); } catch { /* Create the draft below; authentication errors will surface. */ }

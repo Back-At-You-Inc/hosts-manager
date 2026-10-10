@@ -35,3 +35,12 @@ test('an installed prerelease can detect a stable release of the same or newer c
   assert.ok(isNewerVersion('0.1.14', '0.1.13-ci.12'));
   assert.equal(isNewerVersion('0.1.12', '0.1.13-ci.12'), false);
 });
+
+ test('Windows updates recognize installer and portable names while retaining legacy releases', async () => {
+  for (const suffix of ['-installer.exe', '-app.zip', '.exe', '.zip']) {
+    const result = await checkRelease(repo, '0.1.0', 'win32', 'x64', mock({ ...release, assets: [{ name: `Hosts-Manager-0.2.0-win-x64${suffix}` }] }));
+    assert.equal(result.status, 'available');
+  }
+  const sourceOnly = await checkRelease(repo, '0.1.0', 'win32', 'x64', mock({ ...release, assets: [{ name: 'Hosts-Manager-0.2.0-source.zip' }] }));
+  assert.equal(sourceOnly.status, 'error');
+});
