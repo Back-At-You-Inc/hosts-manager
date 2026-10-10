@@ -21,6 +21,7 @@ module.exports = {
     target: [{ target: 'nsis', arch: ['x64'] }, { target: 'zip', arch: ['x64'] }],
     icon: 'assets/icons/app-icon.ico'
   },
+  appImage: { artifactName: 'Hosts-Manager-${version}-linux-x64.${ext}' },
   nsis: { oneClick: false, perMachine: false, allowToChangeInstallationDirectory: true, deleteAppDataOnUninstall: false },
   linux: {
     target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'tar.gz', arch: ['x64'] }],
