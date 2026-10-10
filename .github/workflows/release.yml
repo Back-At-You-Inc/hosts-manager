@@ -94,20 +94,3 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
-  notify:
-    name: Notify
-    needs: [version, build, release]
-    if: always()
-    uses: Back-At-You-Inc/gh-actions/.github/workflows/build-notification.yml@v1
-    with:
-      product-name: Hosts Manager
-      build-info: |
-        Version=${{ needs.version.outputs.version }}
-        Platforms=macOS ARM64, Windows x64, Linux x64
-      statuses: |
-        Build & Push=${{ needs.version.result == 'success' && needs.build.result || needs.version.result }}
-        Release Tag=${{ needs.release.result }}
-      links: |
-        Artifacts=https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        ${{ needs.release.result == 'success' && format('Release=https://github.com/{0}/releases/tag/v{1}', github.repository, needs.version.outputs.version) || '' }}
-    secrets: inherit

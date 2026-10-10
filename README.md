@@ -139,7 +139,7 @@ The workflow generates a version from the manifest's major/minor version and its
 
 Both branch pushes and manual workflow runs publish successful builds. Explicit `v*` tag pushes remain supported when the tag matches the manifest version. Rebuilding an already-published version refuses to replace its existing downloads. The release tag targets the exact commit tested by that workflow run.
 
-GitHub Actions also retains platform artifacts for 7 days. The workflow uses GitHub's built-in token to create the release and upload downloads. Signing secrets are not required. All three hosted platform builds have passed; installed app behavior still requires validation on each operating system. The final Notify job uses BAY's shared build-notification workflow with inherited organization secrets. It sends one Zoho Cliq card per run with the version, platform list, build/release results, and artifact/release links, including when a stage fails.
+GitHub Actions also retains platform artifacts for 7 days. The workflow uses GitHub's built-in token to create the release and upload downloads. Signing secrets are not required. All three hosted platform builds have passed; installed app behavior still requires validation on each operating system. The workflows are self-contained in this repository and use GitHub's official actions plus local build scripts. They do not inherit organization secrets or send external build notifications.
 
 Before installing an update, save drafts and fully quit the app through the tray. Replacing the app preserves saved groups and does not itself change the hosts file.
 

@@ -30,8 +30,8 @@ behavior when those areas change. Include screenshots for interface changes.
 
 Pull requests run the test workflow without release publishing or organization
 secrets. Maintainer branch pushes also run platform packaging and release creation.
-Forks cannot use BAY's private notification infrastructure; resolving that dependency
-is part of the public launch checklist.
+The workflows use GitHub's official actions and repository-local scripts; no private
+workflow dependencies or external build notifications are required.
 
 Never include real hosts files, credentials, customer domains, or personal workspace
 state in reports, screenshots, or fixtures. Use `.example`, `.test`, or `.local`

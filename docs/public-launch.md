@@ -10,14 +10,9 @@ it does not authorize or perform that change.
   source. Replace it with the selected open-source license and update package
   metadata, the README badge, and contribution instructions before advertising
   open-source status. Preserve third-party licenses in either case.
-- Resolve notifications. `release.yml` calls the private
-  `Back-At-You-Inc/gh-actions` reusable workflow. GitHub does not permit a public
-  caller to use a private reusable workflow, even with an `if` condition. Keeping
-  that reference would break the release workflow after the visibility change.
-  Use an approved public BAY notification workflow or move notifications to a
-  private relay that observes public build results. Do not make the shared BAY
-  repository public merely to launch this app. Preserve BAY's card format and
-  keep webhook credentials private.
+- CI is self-contained: repository workflows use official GitHub actions and local
+  scripts, without private reusable workflows, inherited organization secrets,
+  or external build notifications. Verify fork PR checks before launch.
 
 ## Repository review
 
@@ -27,7 +22,8 @@ it does not authorize or perform that change.
   before rewriting history or publishing.
 - Review prior Actions logs and artifacts: they become public with the repository.
 - Enable secret scanning and push protection when available. Verify organization
-  secret access is restricted to what public maintainer workflows need.
+  secret access is restricted to what public maintainer workflows need. Current
+  CI uses only the repository-scoped built-in GitHub token.
 - Enable private vulnerability reporting before advertising the reporting channel
   in SECURITY.md.
 - Configure protection for `master` and require the three platform test checks for
