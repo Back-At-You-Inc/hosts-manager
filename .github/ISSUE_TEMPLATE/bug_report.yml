@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a problem with Hosts Manager
+title: '[Bug]: '
+body:
+  - type: markdown
+    attributes:
+      value: Do not include passwords, tokens, or real private hosts entries. For vulnerabilities, follow SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: 0.1.7
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Operating system and architecture
+      placeholder: macOS ARM64, Windows x64, or Linux x64
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include expected and actual behavior using sample hosts entries.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or error messages
+      description: Remove personal data before attaching files.

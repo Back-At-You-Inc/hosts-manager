@@ -158,6 +158,10 @@ Before installing an update, save drafts and fully quit the app through the tray
 
 Vite bundles the renderer into `dist/renderer`. TypeScript compiles Electron code into `dist/electron`, using CommonJS output for the sandboxed preload. Build tooling also uses JavaScript scripts and a CommonJS builder configuration.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and pull-request guidance, and [SECURITY.md](SECURITY.md) for vulnerability reporting. Public launch preparation is tracked in [docs/public-launch.md](docs/public-launch.md). The current license remains in effect until the launch license is selected.
+
 ## License
 
 Hosts Manager is proprietary software owned by Back-At-You-Inc. Official compiled releases are free to use for personal and internal business purposes. Modifying or redistributing our code, creating derivative products, and public mirroring require written permission, except where applicable law or hosting-service terms provide otherwise. Viewing available source does not make this an open-source project.
