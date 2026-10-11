@@ -12,7 +12,7 @@ module.exports = {
     target: [{ target: 'dmg', arch: ['arm64'] }, { target: 'zip', arch: ['arm64'] }],
     icon: 'assets/icons/app-icon.icns',
     category: 'public.app-category.developer-tools',
-    identity: null,
+    sign: require('./scripts/sign-mac.cjs'),
     hardenedRuntime: false,
     notarize: false,
     extraResources: [{ from: 'dist/helper', to: 'helper' }]
