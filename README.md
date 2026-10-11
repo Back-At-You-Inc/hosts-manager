@@ -184,7 +184,7 @@ Packages are written to `release/`. macOS ARM64 packaging must run on an ARM64 M
 
 ## Updates and releases
 
-Packaged builds check the public GitHub release repository on startup and every six hours. Check manually with **Hosts Manager → Check for Updates…** on macOS, **Help → Check for Updates…** on Windows/Linux, or the tray menu. The sidebar also offers **Check for updates**. Menu checks show a native dialog with the result and a **Download Update** button when a newer compatible release is available. Downloading and replacing the app remain manual.
+Packaged builds check the public GitHub release repository on startup and every hour. Check manually with **Hosts Manager → Check for Updates…** on macOS, **Help → Check for Updates…** on Windows/Linux, or the tray menu. The installed version appears beneath the app name at the top of the sidebar. Menu checks show a native dialog with the result and a **Download Update** button when a newer compatible release is available. Downloading and replacing the app remain manual.
 
 `release-config.json` sets the public release repository. Packaging can override it using `HOSTS_MANAGER_RELEASE_REPOSITORY=owner/repository`. GitHub Actions configures it from the current repository automatically. No GitHub token is embedded in the app; private release repositories are not supported.
 

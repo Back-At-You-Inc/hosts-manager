@@ -182,9 +182,9 @@ app.whenReady().then(async () => {
   });
   if (app.isPackaged && updateRepository) {
     const initialCheck = setTimeout(() => void checkUpdates(), 3000); initialCheck.unref();
-    const interval = setInterval(() => void checkUpdates(), 6 * 60 * 60 * 1000); interval.unref();
+    const interval = setInterval(() => void checkUpdates(), 60 * 60 * 1000); interval.unref();
   }
-  ipcMain.handle('load', () => ({ state, hostsPath, platform: process.platform }));
+  ipcMain.handle('load', () => ({ state, hostsPath, platform: process.platform, version: app.getVersion() }));
   ipcMain.handle('read-system', async () => systemContent(await fs.readFile(hostsPath, 'utf8')));
   ipcMain.handle('save-system', (_, content, expected) => hostOperation(async (): Promise<ApplyResult> => {
     if (busy) return { ok: false, message: 'An update is already in progress.' };

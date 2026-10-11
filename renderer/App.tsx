@@ -19,7 +19,7 @@ export function App() {
   const [notice, setNotice] = useState<ApplyResult>();
   const [busy, setBusy] = useState(false);
   const [update, setUpdate] = useState<UpdateStatus>();
-  const [checkingUpdates, setCheckingUpdates] = useState(false);
+  const [version, setVersion] = useState('');
   const [savingText, setSavingText] = useState(false);
   const [dragging, setDragging] = useState<string>();
   const [dropTarget, setDropTarget] = useState<number>();
@@ -36,6 +36,7 @@ export function App() {
     let mounted = true;
     window.hosts.load().then(data => {
       if (!mounted) return;
+      setVersion(data.version);
       live.current = data.state; setState(data.state); setSelected(data.state.groups[0]?.id ?? SYSTEM_ID); setHostsPath(data.hostsPath);
     }).catch(error => { if (mounted) errorNotice(error); });
     void window.hosts.readSystem().then(setSystem).catch(error => setSystemError(error instanceof Error ? error.message : String(error)));
@@ -59,15 +60,6 @@ export function App() {
     return () => clearTimeout(timeout);
   }, [notice]);
 
-  async function checkUpdates() {
-    if (checkingUpdates) return;
-    setCheckingUpdates(true);
-    try {
-      const result = await window.hosts.checkUpdates(); setUpdate(result);
-      if (result.status !== 'available') setNotice({ ok: result.status === 'current', message: result.message });
-    } catch (error) { errorNotice(error); }
-    finally { setCheckingUpdates(false); }
-  }
   async function openUpdate() {
     try { await window.hosts.openUpdate(); } catch (error) { errorNotice(error); }
   }
@@ -206,7 +198,7 @@ export function App() {
 
   return <>
     <aside>
-      <div className="brand"><span className="logo">H</span> Hosts Manager</div>
+      <div className="brand"><span className="logo">H</span><div className="brand-text">Hosts Manager{version && <span className="brand-version">Version {version}</span>}</div></div>
       <div className="workspace">YOUR WORKSPACE</div>
       <div className="list-heading"><span>Host groups</span><button title="Create group" aria-label="Create group" disabled={!state || busy} onClick={openName}>+</button></div>
       <div id="groups" onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDropTarget(undefined); }}>{items.map((item, index) => <Fragment key={item.id}>{dropSlot(index)}<div
@@ -245,7 +237,6 @@ export function App() {
         <p>Download the new version from GitHub and install it when you're ready.</p>
         <button onClick={() => void openUpdate()}>Download update ↗</button>
       </div>}
-      <div className="update-controls"><button disabled={checkingUpdates} onClick={() => void checkUpdates()}>{checkingUpdates ? 'Checking for updates…' : 'Check for updates'}</button>{update && <span>Version {update.currentVersion}</span>}</div>
       <div className="sidebar-bottom"><span className="small-icon">↕</span> Drag groups to set their priority.<br /><span>Groups are applied from top to bottom.</span></div>
     </aside>
     <main>

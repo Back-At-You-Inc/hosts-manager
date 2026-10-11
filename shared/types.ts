@@ -3,7 +3,7 @@ export interface HostsState { active: boolean; groups: HostGroup[]; systemPositi
 export interface ApplyResult { ok: boolean; message: string }
 export interface StateUpdate { state: HostsState; result: ApplyResult }
 export interface HostsApi {
-  load(): Promise<{ state: HostsState; hostsPath: string; platform: string }>;
+  load(): Promise<{ state: HostsState; hostsPath: string; platform: string; version: string }>;
   readSystem(): Promise<string>;
   saveSystem(content: string, expected: string): Promise<ApplyResult>;
   save(state: HostsState): Promise<HostsState>;
