@@ -21,7 +21,7 @@ test('release publishing waits for every upload and targets the tested commit', 
   try {
     await mkdir(join(directory, 'release')); await mkdir(join(directory, 'bin')); await mkdir(join(directory, 'scripts'));
     await writeFile(join(directory, 'scripts/install-linux.py'), await readFile(resolve('scripts/install-linux.py')));
-    for (const suffix of ['mac-arm64.dmg', 'mac-arm64.zip', 'linux-x64.AppImage', 'linux-x64.tar.gz', 'win-x64-installer.exe', 'win-x64-app.zip']) await writeFile(join(directory, 'release', `Hosts-Manager-0.1.13-${suffix}`), suffix);
+    for (const suffix of ['mac-arm64.dmg', 'mac-arm64.zip', 'linux-x64.AppImage', 'linux-x64.tar.gz', 'linux-x64.deb', 'linux-x64.rpm', 'win-x64-installer.exe', 'win-x64-app.zip']) await writeFile(join(directory, 'release', `Hosts-Manager-0.1.13-${suffix}`), suffix);
     await writeFile(join(directory, 'release/Hosts-Manager-0.1.13-source.zip'), 'source must not be uploaded');
     const log = join(directory, 'calls');
     await writeFile(join(directory, 'bin/gh'), '#!/bin/sh\nprintf "%s\\n" "$*" >> "$TEST_LOG"\nif [ "$2" = "view" ]; then exit 1; fi\nif [ "$2" = "upload" ] && [ "$FAIL_UPLOAD" = "yes" ]; then exit 1; fi\n', { mode: 0o755 });
@@ -33,16 +33,26 @@ test('release publishing waits for every upload and targets the tested commit', 
     assert.ok(calls[2].startsWith('release upload'));
     assert.ok(calls[2].includes('win-x64-installer.exe'));
     assert.ok(calls[2].includes('win-x64-app.zip'));
+    assert.ok(calls[2].includes('linux-x64.deb'));
+    assert.ok(calls[2].includes('linux-x64.rpm'));
     assert.ok(!calls[2].includes('source.zip'));
     const notes = await readFile(join(directory, 'release/release-notes.md'), 'utf8');
     assert.ok(notes.includes('## App downloads'));
     assert.ok(notes.includes('https://github.com/example/hosts-manager/releases/download/v0.1.13/Hosts-Manager-0.1.13-win-x64-installer.exe'));
     assert.ok(!notes.includes('source.zip'));
     assert.ok(calls[3].includes('--draft=false'));
-    assert.equal((await readFile(join(directory, 'release/SHA256SUMS'), 'utf8')).trim().split('\n').length, 7);
+    assert.equal((await readFile(join(directory, 'release/SHA256SUMS'), 'utf8')).trim().split('\n').length, 9);
     await writeFile(log, '');
     assert.throws(() => execFileSync(process.execPath, [script], { cwd: directory, env: { ...env, FAIL_UPLOAD: 'yes' }, stdio: 'pipe' }));
     assert.ok(!(await readFile(log, 'utf8')).includes('--draft=false'));
+    for (const suffix of ['linux-x64.deb', 'linux-x64.rpm']) {
+      const path = join(directory, 'release', `Hosts-Manager-0.1.13-${suffix}`);
+      await rm(path);
+      await writeFile(log, '');
+      assert.throws(() => execFileSync(process.execPath, [script], { cwd: directory, env, stdio: 'pipe' }));
+      assert.equal(await readFile(log, 'utf8'), '');
+      await writeFile(path, suffix);
+    }
     await rm(join(directory, 'release/Hosts-Manager-0.1.13-win-x64-installer.exe'));
     await writeFile(log, '');
     assert.throws(() => execFileSync(process.execPath, [script], { cwd: directory, env, stdio: 'pipe' }));

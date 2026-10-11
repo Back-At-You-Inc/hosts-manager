@@ -38,7 +38,7 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 | --- | --- | --- |
 | macOS | Apple Silicon / ARM64 | DMG or ZIP |
 | Windows | x64 | `-installer.exe` (setup wizard) or `-app.zip` (portable app) |
-| Linux | x64 | Install script, AppImage, or tar.gz |
+| Linux | x64 | DEB, RPM, install script, AppImage, or tar.gz |
 
 **macOS:** Open the DMG and move **Hosts Manager.app** to Applications, or extract the ZIP. Releases are not Developer ID signed or notarized, so macOS may require approval in **System Settings → Privacy & Security**. The first protected hosts update asks to install an administrator helper; subsequent updates use that helper without repeating the password prompt.
 
@@ -49,6 +49,28 @@ Download the latest version from the [GitHub Releases page](https://github.com/B
 For macOS ARM64, a [Homebrew cask and installation instructions](docs/homebrew.md) are prepared for public launch. Stable releases update the cask automatically; unauthenticated installation requires this repository to be public.
 
 Releases upload packaged apps, the Linux install script, and checksums. GitHub also automatically displays source-code archives, which cannot be hidden; use the **App downloads** links in the release notes to install the app.
+
+### Linux packages
+
+Download the package matching your distribution from [Releases](https://github.com/Back-At-You-Inc/hosts-manager/releases/latest), then install it from your downloads directory. Replace `<version>` with the downloaded version.
+
+**Ubuntu, Debian, Linux Mint:**
+
+```sh
+sudo apt install ./Hosts-Manager-<version>-linux-x64.deb
+```
+
+**Fedora:**
+
+```sh
+sudo dnf install ./Hosts-Manager-<version>-linux-x64.rpm
+```
+
+The package manager installs the app, application-menu entry, and declared dependencies. Launch **Hosts Manager** from the menu. Downloads are unsigned; only install packages from the official release. A desktop authentication agent and PolicyKit are needed for protected hosts updates.
+
+For upgrades, save drafts, quit through the tray, and install the newer package with the same command. To uninstall, use `sudo apt remove hosts-manager` or `sudo dnf remove hosts-manager`. Saved groups and existing hosts entries remain; disable **Hosts management** first if you want managed entries removed.
+
+These are downloadable packages. We do not currently host an APT or DNF repository, so system updates will not automatically download new app releases. Use the app's update notification or the release page to download upgrades. Avoid installing a native package and the per-user script version together.
 
 ### Linux install
 
@@ -162,7 +184,7 @@ Packaged builds check the public GitHub release repository on startup and every 
 
 The independent [Tests workflow](.github/workflows/tests.yml) runs TypeScript checks and regression tests on macOS, Windows, and Linux. The release version badge refreshes after a successful stable release.
 
-Every branch push runs the [build and release workflow](.github/workflows/release.yml). Each platform runs tests before packaging. A release is published automatically only after all three platform builds succeed and all six downloads plus SHA-256 checksums have been uploaded. Failed tests, builds, or uploads prevent publication. No manual publish step or version tag is required.
+Every branch push runs the [build and release workflow](.github/workflows/release.yml). Each platform runs tests before packaging. A release is published automatically only after all three platform builds succeed and all eight app packages, the Linux installer, and SHA-256 checksums have been uploaded. Failed tests, builds, or uploads prevent publication. No manual publish step or version tag is required.
 
 The workflow generates a version from the manifest's major/minor version and its patch number plus the GitHub workflow run number. For example, a base of `0.1.1` and run number `12` produces `0.1.13` on `master`. Other branches publish prereleases such as `0.1.13-ci.12`, which are excluded from normal app update notifications. The computed version is embedded in the packages and used in artifact filenames and the release tag. Manifest changes remain inside the build; CI does not commit them back to the branch.
 

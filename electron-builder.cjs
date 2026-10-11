@@ -24,10 +24,22 @@ module.exports = {
   },
   appImage: { artifactName: 'Hosts-Manager-${version}-linux-x64.${ext}' },
   nsis: { artifactName: 'Hosts-Manager-${version}-win-${arch}-installer.${ext}', oneClick: false, perMachine: false, allowToChangeInstallationDirectory: true, deleteAppDataOnUninstall: false },
+  deb: {
+    artifactName: 'Hosts-Manager-${version}-linux-x64.${ext}',
+    maintainer: 'Back At You, Inc.',
+    depends: ['libgtk-3-0', 'libnotify4', 'libnss3', 'libxss1', 'libxtst6', 'xdg-utils', 'libatspi2.0-0', 'libuuid1', 'libsecret-1-0', 'pkexec']
+  },
+  rpm: {
+    artifactName: 'Hosts-Manager-${version}-linux-x64.${ext}',
+    maintainer: 'Back At You, Inc.',
+    fpm: ['--license', 'Proprietary'],
+    depends: ['gtk3', 'libnotify', 'nss', 'libXScrnSaver', '(libXtst or libXtst6)', 'xdg-utils', 'at-spi2-core', '(libuuid or libuuid1)', 'polkit']
+  },
   linux: {
-    target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'tar.gz', arch: ['x64'] }],
+    target: [{ target: 'AppImage', arch: ['x64'] }, { target: 'tar.gz', arch: ['x64'] }, { target: 'deb', arch: ['x64'] }, { target: 'rpm', arch: ['x64'] }],
     icon: 'assets/icons/app-icon.png',
     category: 'Utility',
+    synopsis: 'Manage hosts files with switchable groups',
     executableName: 'hosts-manager',
     extraResources: [{ from: 'assets/icons/app-icon.png', to: 'app-icon.png' }]
   }

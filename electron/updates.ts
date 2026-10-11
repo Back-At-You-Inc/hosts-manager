@@ -33,7 +33,7 @@ export async function checkRelease(repository: string | undefined, currentVersio
     if (!isNewerVersion(data.tag_name, currentVersion)) return { status: 'current', currentVersion, message: `Hosts Manager ${currentVersion} is up to date.` };
     const os = { darwin: 'mac', win32: 'win', linux: 'linux' }[platform];
     const prefix = `Hosts-Manager-${data.tag_name.replace(/^v/, '')}-${os}-${arch}`;
-    const extensions = platform === 'darwin' ? ['dmg', 'zip'] : platform === 'win32' ? ['exe', 'zip'] : ['AppImage', 'tar.gz'];
+    const extensions = platform === 'darwin' ? ['dmg', 'zip'] : platform === 'win32' ? ['exe', 'zip'] : ['AppImage', 'tar.gz', 'deb', 'rpm'];
     const assets = Array.isArray(data.assets) ? data.assets : [];
     const compatible = assets.some(asset => asset && typeof asset.name === 'string' && (extensions.some(extension => asset.name === `${prefix}.${extension}`) || (platform === 'win32' && ['-installer.exe', '-app.zip'].some(suffix => asset.name === prefix + suffix))));
     if (!compatible) return { status: 'error', currentVersion, message: 'A newer release exists, but its download for this computer is not available yet.' };

@@ -55,7 +55,22 @@ jobs:
         if: runner.os == 'Linux'
         run: python3 -m unittest discover -s test -p linux_installer_test.py
       - run: npm run setup:packaging
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y rpm
       - run: npm run package -- ${{ matrix.target }}
+      - name: Validate Linux native packages
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          deb="release/Hosts-Manager-${RELEASE_VERSION}-linux-x64.deb"
+          rpm="release/Hosts-Manager-${RELEASE_VERSION}-linux-x64.rpm"
+          test "$(dpkg-deb --field "$deb" Package)" = hosts-manager
+          test "$(dpkg-deb --field "$deb" Architecture)" = amd64
+          dpkg-deb --field "$deb" Depends | rg 'pkexec'
+          test "$(rpm -qp --queryformat '%{NAME}' "$rpm")" = hosts-manager
+          test "$(rpm -qp --queryformat '%{ARCH}' "$rpm")" = x86_64
+          rpm -qp --requires "$rpm" | rg '^polkit$'
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ matrix.target }}
@@ -65,6 +80,8 @@ jobs:
             release/Hosts-Manager-*.exe
             release/Hosts-Manager-*.AppImage
             release/Hosts-Manager-*.tar.gz
+            release/Hosts-Manager-*.deb
+            release/Hosts-Manager-*.rpm
           if-no-files-found: error
           retention-days: 7
   release:

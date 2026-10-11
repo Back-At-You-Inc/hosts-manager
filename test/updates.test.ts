@@ -44,3 +44,10 @@ test('an installed prerelease can detect a stable release of the same or newer c
   const sourceOnly = await checkRelease(repo, '0.1.0', 'win32', 'x64', mock({ ...release, assets: [{ name: 'Hosts-Manager-0.2.0-source.zip' }] }));
   assert.equal(sourceOnly.status, 'error');
 });
+
+test('Linux update checks recognize DEB and RPM release assets', async () => {
+  for (const extension of ['deb', 'rpm']) {
+    const result = await checkRelease(repo, '0.1.0', 'linux', 'x64', mock({ ...release, assets: [{ name: `Hosts-Manager-0.2.0-linux-x64.${extension}` }] }));
+    assert.equal(result.status, 'available');
+  }
+});
