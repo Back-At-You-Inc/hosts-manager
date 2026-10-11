@@ -121,7 +121,7 @@ Example entries:
 
 Entries require an IPv4 or IPv6 address followed by one or more hostnames. Comments and blank lines are supported. Duplicate hostname resolution and DNS/application caching depend on the operating system.
 
-Text drafts remain in memory while you navigate between groups, but do not survive quitting. Save them before closing the app or installing an update. Closing the window or choosing **Quit** removes the app's managed hosts sections, leaving only your system entries, then exits. If cleanup fails, the app remains open and shows the error.
+Text drafts remain in memory while you navigate between groups or hide the window, but do not survive quitting. Save them before quitting or installing an update. Closing the window keeps the app running in the tray, with hosts management active. Reopen it from the tray or macOS Dock. On desktops without a tray, the window minimizes to stay reachable. Choosing **Quit** removes the app's managed hosts sections, leaving only your system entries, then exits. If cleanup fails, the app remains open and shows the error.
 
 The app remembers whether **Hosts management** was enabled and each group's enable setting. On the next launch it reapplies the saved, enabled groups if management was previously on. Explicitly turning management off keeps it off on the next launch. Cleanup during exit does not change these saved preferences.
 

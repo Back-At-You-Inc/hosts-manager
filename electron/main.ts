@@ -168,7 +168,12 @@ app.whenReady().then(async () => {
   window = new BrowserWindow({ icon, width: 1180, height: 800, minWidth: 850, minHeight: 600, backgroundColor: nativeTheme.shouldUseDarkColors ? '#171a22' : '#f7f8fa', title: 'Hosts Manager', webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
   window.loadFile(path.join(__dirname, '../../renderer/index.html'));
   window.on('close', event => {
-    if (!allowClose) { event.preventDefault(); void closeApp(); }
+    if (allowClose) return;
+    event.preventDefault();
+    if (closing) return;
+    // Keep hosts management running; Quit performs cleanup and exits.
+    if (tray || process.platform === 'darwin') window.hide();
+    else window.minimize(); // Remain reachable when the desktop has no tray.
   });
   window.on('query-session-end', event => { if (state.active || busy) { event.preventDefault(); void closeApp(); } });
   nativeTheme.on('updated', () => { if (!window.isDestroyed()) window.setBackgroundColor(nativeTheme.shouldUseDarkColors ? '#171a22' : '#f7f8fa'); });
