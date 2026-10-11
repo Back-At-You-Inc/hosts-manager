@@ -47,10 +47,34 @@ async function setStartup(enabled: boolean): Promise<void> {
 function startupMenu(): Electron.MenuItemConstructorOptions {
   return { label: 'Launch at startup', type: 'checkbox', checked: startupEnabled, enabled: app.isPackaged, click: item => { void setStartup(item.checked); } };
 }
+function checkUpdatesMenu(): Electron.MenuItemConstructorOptions {
+  return { label: 'Check for Updates…', click: () => { void showUpdateCheck(); } };
+}
+let showingUpdateCheck = false;
+async function showUpdateCheck(): Promise<void> {
+  if (showingUpdateCheck) return;
+  showingUpdateCheck = true;
+  try {
+    const result = await checkUpdates();
+    if (window.isDestroyed()) return;
+    const available = result.status === 'available';
+    const answer = await dialog.showMessageBox(window, {
+      type: result.status === 'error' || result.status === 'unconfigured' ? 'warning' : 'info',
+      title: 'Hosts Manager Updates', message: result.message,
+      detail: available ? `Installed version: ${result.currentVersion}. Download and install the new version from GitHub Releases.` : `Installed version: ${result.currentVersion}`,
+      buttons: available ? ['Download Update', 'Later'] : ['OK'],
+      defaultId: 0, cancelId: available ? 1 : 0
+    });
+    if (available && answer.response === 0 && result.url) await shell.openExternal(result.url);
+  } catch (error) {
+    dialog.showErrorBox('Update check failed', error instanceof Error ? error.message : String(error));
+  } finally { showingUpdateCheck = false; }
+}
 function updateMenus(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
-    ...(process.platform === 'darwin' ? [{ label: 'Hosts Manager', submenu: [{ role: 'about' as const }, startupMenu(), { type: 'separator' as const }, { role: 'quit' as const }] }] : [{ label: 'File', submenu: [startupMenu(), { type: 'separator' as const }, { role: 'quit' as const }] }]),
-    { role: 'editMenu' }, { role: 'viewMenu' }, { role: 'windowMenu' }
+    ...(process.platform === 'darwin' ? [{ label: 'Hosts Manager', submenu: [{ role: 'about' as const }, checkUpdatesMenu(), startupMenu(), { type: 'separator' as const }, { role: 'quit' as const }] }] : [{ label: 'File', submenu: [startupMenu(), { type: 'separator' as const }, { role: 'quit' as const }] }]),
+    { role: 'editMenu' }, { role: 'viewMenu' }, { role: 'windowMenu' },
+    ...(process.platform === 'darwin' ? [] : [{ label: 'Help', submenu: [checkUpdatesMenu()] }])
   ]));
 }
 async function closeApp(): Promise<void> {
@@ -129,7 +153,7 @@ function updateTray() {
       try { await removeMacHelper(); window.webContents.send('state-update', { state, result: { ok: true, message: 'Administrator helper removed.' } }); }
       catch (error) { dialog.showErrorBox('Helper removal failed', error instanceof Error ? error.message : String(error)); }
     } }] : []),
-    { type: 'separator' }, startupMenu(), { label: 'Quit', click: () => { void closeApp(); } }
+    { type: 'separator' }, checkUpdatesMenu(), startupMenu(), { label: 'Quit', click: () => { void closeApp(); } }
   ]));
 }
 app.whenReady().then(async () => {
