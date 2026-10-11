@@ -8,6 +8,7 @@ import { checkRelease, releaseRepository } from './updates';
 import { removeMacHelper } from './mac-helper';
 import { LinuxStartup } from './startup';
 import { prepareHostsClose } from './close';
+import { handleWindowClose } from './window-close';
 app.setName('Hosts Manager');
 nativeTheme.themeSource = 'system';
 if (process.platform === 'win32') app.setAppUserModelId('com.hostsmanager.desktop');
@@ -168,12 +169,10 @@ app.whenReady().then(async () => {
   window = new BrowserWindow({ icon, width: 1180, height: 800, minWidth: 850, minHeight: 600, backgroundColor: nativeTheme.shouldUseDarkColors ? '#171a22' : '#f7f8fa', title: 'Hosts Manager', webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
   window.loadFile(path.join(__dirname, '../../renderer/index.html'));
   window.on('close', event => {
-    if (allowClose) return;
-    event.preventDefault();
-    if (closing) return;
-    // Keep hosts management running; Quit performs cleanup and exits.
-    if (tray || process.platform === 'darwin') window.hide();
-    else window.minimize(); // Remain reachable when the desktop has no tray.
+    handleWindowClose({
+      platform: process.platform, hasTray: Boolean(tray), allowClose, quitting: closing,
+      preventDefault: () => event.preventDefault(), hide: () => window.hide(), minimize: () => window.minimize()
+    });
   });
   window.on('query-session-end', event => { if (state.active || busy) { event.preventDefault(); void closeApp(); } });
   nativeTheme.on('updated', () => { if (!window.isDestroyed()) window.setBackgroundColor(nativeTheme.shouldUseDarkColors ? '#171a22' : '#f7f8fa'); });
