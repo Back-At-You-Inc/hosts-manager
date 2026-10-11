@@ -121,13 +121,19 @@ Example entries:
 
 Entries require an IPv4 or IPv6 address followed by one or more hostnames. Comments and blank lines are supported. Duplicate hostname resolution and DNS/application caching depend on the operating system.
 
-Text drafts remain in memory while you navigate between groups, but do not survive quitting. Save them before closing the app permanently or installing an update. Closing the window normally keeps the app in the tray; use **Quit** from the tray to exit. Quitting leaves the current hosts entries in place.
+Text drafts remain in memory while you navigate between groups, but do not survive quitting. Save them before closing the app or installing an update. Closing the window or choosing **Quit** removes the app's managed hosts sections, leaving only your system entries, then exits. If cleanup fails, the app remains open and shows the error.
+
+The app remembers whether **Hosts management** was enabled and each group's enable setting. On the next launch it reapplies the saved, enabled groups if management was previously on. Explicitly turning management off keeps it off on the next launch. Cleanup during exit does not change these saved preferences.
+
+Enable **Launch at startup** in the application or tray menu to launch when you sign in after boot. Its checkmark reflects the saved setting. This option is available in packaged builds; development launches do not register temporary executables. Restoring entries may require administrator authorization on Windows or Linux.
+
+Forced termination, crashes, or power loss can prevent exit cleanup. The next launch reapplies the remembered configuration, but cleanup cannot run while the app is stopped unexpectedly.
 
 ## Hosts files and permissions
 
 The app updates `/etc/hosts` on macOS/Linux or `%SystemRoot%\System32\drivers\etc\hosts` on Windows. Before changing the file, it writes a backup beside it named `hosts.hosts-manager.bak`.
 
-Group entries use marked **Hosts Manager** sections. Group updates preserve entries outside those sections. Explicit System saves change the system entries after validation; stale edits are rejected rather than overwriting a newer external change. Launching the app alone does not modify your hosts file.
+Group entries use marked **Hosts Manager** sections. Group updates preserve entries outside those sections. Explicit System saves change the system entries after validation; stale edits are rejected rather than overwriting a newer external change. Launching the app reapplies saved enabled groups when hosts management was previously on.
 
 The Electron interface runs without administrator privileges. Only protected file updates use elevated access. On macOS, a root-owned native helper is installed for the account that approved it and can update only `/etc/hosts`. It checks peer credentials, validates requests, rejects stale snapshots, creates a backup, and writes changes atomically. Other processes running as that authorized account share this hosts-file capability. A changed helper version requests permission to upgrade on its next protected update.
 
