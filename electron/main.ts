@@ -168,10 +168,12 @@ app.whenReady().then(async () => {
   if (process.platform === 'darwin') app.dock?.setIcon(icon);
   window = new BrowserWindow({ icon, width: 1180, height: 800, minWidth: 850, minHeight: 600, backgroundColor: nativeTheme.shouldUseDarkColors ? '#171a22' : '#f7f8fa', title: 'Hosts Manager', webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
   window.loadFile(path.join(__dirname, '../../renderer/index.html'));
+  window.on('show', () => { if (process.platform === 'darwin') void app.dock?.show(); });
   window.on('close', event => {
     handleWindowClose({
       platform: process.platform, hasTray: Boolean(tray), allowClose, quitting: closing,
-      preventDefault: () => event.preventDefault(), hide: () => window.hide(), minimize: () => window.minimize()
+      preventDefault: () => event.preventDefault(), hide: () => window.hide(), minimize: () => window.minimize(),
+      hideDock: () => app.dock?.hide()
     });
   });
   window.on('query-session-end', event => { if (state.active || busy) { event.preventDefault(); void closeApp(); } });

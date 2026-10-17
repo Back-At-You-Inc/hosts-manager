@@ -6,10 +6,12 @@ export function handleWindowClose(options: {
   preventDefault: () => void;
   hide: () => void;
   minimize: () => void;
+  hideDock: () => void;
 }): void {
   if (options.allowClose) return;
   options.preventDefault();
   if (options.quitting) return;
   if (options.hasTray || options.platform === 'darwin') options.hide();
   else options.minimize();
+  if (options.platform === 'darwin' && options.hasTray) options.hideDock();
 }
