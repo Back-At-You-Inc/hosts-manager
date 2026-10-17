@@ -1,6 +1,6 @@
 cask "hosts-manager" do
-  version "0.1.23"
-  sha256 "f8c6ea5317de7210832c2ec65c64c6a29da763c23985d0e2691f4b6346d08538"
+  version "0.1.25"
+  sha256 "5605328ceec59fc417210a565cbd2a687f1eb3ce2a56929752c9876e6707b693"
 
   url "https://github.com/Back-At-You-Inc/hosts-manager/releases/download/v#{version}/Hosts-Manager-#{version}-mac-arm64.dmg"
   name "Hosts Manager"
