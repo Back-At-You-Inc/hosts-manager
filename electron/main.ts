@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { compose, composeSystem, systemContent } from './hosts';
 import { writeHosts } from './permissions';
 import { checkRelease, releaseRepository } from './updates';
+import { createUpdateDownloader } from './update-download';
 import { removeMacHelper } from './mac-helper';
 import { LinuxStartup } from './startup';
 import { prepareHostsClose } from './close';
@@ -62,14 +63,30 @@ async function showUpdateCheck(): Promise<void> {
     const answer = await dialog.showMessageBox(window, {
       type: result.status === 'error' || result.status === 'unconfigured' ? 'warning' : 'info',
       title: 'Hosts Manager Updates', message: result.message,
-      detail: available ? `Installed version: ${result.currentVersion}. Download and install the new version from GitHub Releases.` : `Installed version: ${result.currentVersion}`,
+      detail: available ? `Installed version: ${result.currentVersion}. ${result.download ? 'Download and open the DMG, then quit Hosts Manager and replace it in Applications.' : 'Download and install the new version from GitHub Releases.'}` : `Installed version: ${result.currentVersion}`,
       buttons: available ? ['Download Update', 'Later'] : ['OK'],
       defaultId: 0, cancelId: available ? 1 : 0
     });
-    if (available && answer.response === 0 && result.url) await shell.openExternal(result.url);
+    if (available && answer.response === 0) await openUpdate();
   } catch (error) {
     dialog.showErrorBox('Update check failed', error instanceof Error ? error.message : String(error));
   } finally { showingUpdateCheck = false; }
+}
+const downloadUpdate = createUpdateDownloader({
+  temporaryDirectory: app.getPath('temp'), fetcher: net.fetch as typeof fetch, openPath: filename => shell.openPath(filename),
+  progress: progress => {
+    if (window.isDestroyed()) return;
+    window.webContents.send('update-download', progress);
+    window.setProgressBar(progress.status === 'downloading' ? (progress.total ? progress.received / progress.total : 2) : -1);
+  }
+});
+async function openUpdate(): Promise<void> {
+  const result = updateStatus;
+  if (result?.status !== 'available') return;
+  if (result.download) {
+    window.show(); window.focus();
+    await downloadUpdate(result.download);
+  } else if (result.url) await shell.openExternal(result.url);
 }
 function updateMenus(): void {
   Menu.setApplicationMenu(Menu.buildFromTemplate([
@@ -183,9 +200,7 @@ app.whenReady().then(async () => {
   try { tray = new Tray(trayIcon); tray.on('click', () => { window.show(); window.focus(); }); updateTray(); } catch { /* Some Linux desktops do not provide a tray. */ }
   try { updateRepository = releaseRepository(JSON.parse(await fs.readFile(path.join(app.getAppPath(), 'release-config.json'), 'utf8')).repository); } catch { /* Unconfigured development builds still run. */ }
   ipcMain.handle('check-updates', () => checkUpdates());
-  ipcMain.handle('open-update', async () => {
-    if (updateStatus?.status === 'available' && updateStatus.url) await shell.openExternal(updateStatus.url);
-  });
+  ipcMain.handle('open-update', () => openUpdate());
   if (app.isPackaged && updateRepository) {
     const initialCheck = setTimeout(() => void checkUpdates(), 3000); initialCheck.unref();
     const interval = setInterval(() => void checkUpdates(), 60 * 60 * 1000); interval.unref();

@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
-import type { ApplyResult, HostGroup, HostsState, UpdateStatus } from '../shared/types';
+import type { ApplyResult, HostGroup, HostsState, UpdateStatus, UpdateDownloadProgress } from '../shared/types';
 
 const SYSTEM_ID = '__system_hosts__';
 
@@ -19,6 +19,7 @@ export function App() {
   const [notice, setNotice] = useState<ApplyResult>();
   const [busy, setBusy] = useState(false);
   const [update, setUpdate] = useState<UpdateStatus>();
+  const [download, setDownload] = useState<UpdateDownloadProgress>();
   const [version, setVersion] = useState('');
   const [savingText, setSavingText] = useState(false);
   const [dragging, setDragging] = useState<string>();
@@ -44,7 +45,8 @@ export function App() {
       live.current = data.state; setState(data.state); setSelected(previous => previous === SYSTEM_ID || data.state.groups.some(g => g.id === previous) ? previous : data.state.groups[0]?.id ?? SYSTEM_ID); setNotice(data.result);
     });
     const unsubscribeUpdates = window.hosts.onUpdateAvailable(setUpdate);
-    return () => { mounted = false; unsubscribe(); unsubscribeUpdates(); };
+    const unsubscribeDownload = window.hosts.onUpdateDownload(setDownload);
+    return () => { mounted = false; unsubscribe(); unsubscribeUpdates(); unsubscribeDownload(); };
   }, []);
 
   useEffect(() => {
@@ -234,8 +236,9 @@ export function App() {
       <div className="sidebar-management"><div className="global"><div><strong>Hosts management</strong><span>{state?.active ? 'Enabled' : 'Disabled'}</span></div><Toggle checked={!!state?.active} label="Enable hosts management" disabled={!state || busy} onChange={() => { if (live.current) void change({ ...live.current, active: !live.current.active }); }} /></div><p>Apply enabled groups to your system.</p></div>
       {update?.status === 'available' && <div className="update-card" role="status">
         <strong>Update available · {update.version}</strong>
-        <p>Download the new version from GitHub and install it when you're ready.</p>
-        <button onClick={() => void openUpdate()}>Download update ↗</button>
+        <p>{download?.message ?? (update.download ? 'Download and open the DMG, then replace the app in Applications.' : 'Download the new version from GitHub and install it when you\'re ready.')}</p>
+        {download?.status === 'downloading' && <progress aria-label="Update download progress" max={download.total ?? 1} value={download.total ? download.received : undefined} />}
+        <button disabled={download?.status === 'downloading' || download?.status === 'opening'} onClick={() => void openUpdate()}>{download?.status === 'downloading' ? 'Downloading…' : download?.status === 'opening' ? 'Opening…' : download?.status === 'error' ? 'Retry download' : update.download ? 'Download update' : 'Download update ↗'}</button>
       </div>}
       <div className="sidebar-bottom"><span className="small-icon">↕</span> Drag groups to set their priority.<br /><span>Groups are applied from top to bottom.</span></div>
     </aside>

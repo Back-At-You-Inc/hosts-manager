@@ -39,7 +39,7 @@ it does not authorize or perform that change.
   download repository is unnecessary for an open-source launch.
 - The configured update repository already matches this repository. Verify a
   logged-out request can fetch the latest stable release and each platform asset.
-  Current in-app updates notify and open the download page; installation is manual.
+  In-app updates download and open the matching macOS DMG with progress; installation remains manual. Other platforms open the release page.
 - Publish a new tested release under the final license. Previous packages retain
   their embedded license; changing LICENSE does not update existing installers.
 - GitHub's automatic source archives remain visible on releases. The explicit app

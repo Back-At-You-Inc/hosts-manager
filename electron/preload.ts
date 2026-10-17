@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { HostsApi, StateUpdate, UpdateStatus } from '../shared/types';
+import type { HostsApi, StateUpdate, UpdateStatus, UpdateDownloadProgress } from '../shared/types';
 const api: HostsApi = {
   load: () => ipcRenderer.invoke('load'),
   readSystem: () => ipcRenderer.invoke('read-system'),
@@ -8,6 +8,11 @@ const api: HostsApi = {
   apply: state => ipcRenderer.invoke('apply', state),
   checkUpdates: () => ipcRenderer.invoke('check-updates'),
   openUpdate: () => ipcRenderer.invoke('open-update'),
+  onUpdateDownload: callback => {
+    const listener = (_event: Electron.IpcRendererEvent, data: UpdateDownloadProgress) => callback(data);
+    ipcRenderer.on('update-download', listener);
+    return () => ipcRenderer.removeListener('update-download', listener);
+  },
   onUpdateAvailable: callback => {
     const listener = (_event: Electron.IpcRendererEvent, data: UpdateStatus) => callback(data);
     ipcRenderer.on('update-available', listener);

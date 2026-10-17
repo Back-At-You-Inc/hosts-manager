@@ -19,7 +19,7 @@
 
 #groups>.group-row{margin:0}.drop-slot{height:10px;position:relative;display:flex;align-items:center}.drop-marker{width:100%;display:flex;align-items:center;gap:3px;color:#777be5;visibility:hidden;pointer-events:none}.drop-slot.active .drop-marker{visibility:visible}.drop-line{flex:1;height:2px;background:currentColor;border-radius:2px;box-shadow:0 0 5px #777be520}.drop-chevron{width:8px;height:12px;flex-shrink:0;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}@media(prefers-color-scheme:dark){.drop-marker{color:#a5a8ff}}
 
-.update-card{margin:18px 10px 0;padding:12px;border:1px solid #cdd0f0;border-radius:8px;background:#e9ebfa;color:#434b72;font-size:11px}.update-card strong{font-weight:600}.update-card p{line-height:1.5;margin:7px 0}.update-card button{background:transparent;color:#555bd0;border:0;padding:4px 0;font-size:11px;font-weight:600}
+.update-card{margin:18px 10px 0;padding:12px;border:1px solid #cdd0f0;border-radius:8px;background:#e9ebfa;color:#434b72;font-size:11px}.update-card strong{font-weight:600}.update-card p{line-height:1.5;margin:7px 0}.update-card button{background:transparent;color:#555bd0;border:0;padding:4px 0;font-size:11px;font-weight:600}.update-card progress{width:100%;accent-color:#555bd0}.update-card button:disabled{opacity:.6;cursor:wait}
 @media(prefers-color-scheme:dark){.update-card{background:#292b47;border-color:#444663;color:#c4cde0}.update-card button{color:#aaa5ff}}
 
 .brand-text{display:flex;flex-direction:column;gap:4px}.brand-version{font-size:10px;font-weight:400;letter-spacing:0;color:#818899}@media(prefers-color-scheme:dark){.brand-version{color:#929db2}}

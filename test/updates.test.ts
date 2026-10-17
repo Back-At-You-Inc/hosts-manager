@@ -21,6 +21,12 @@ test('each platform finds its download and opens only a constructed GitHub relea
     assert.equal(result.url, 'https://github.com/example/hosts-manager/releases/tag/v0.2.0');
   }
 });
+test('macOS prefers the matching DMG and ignores URLs supplied by release assets', async () => {
+  const result = await checkRelease(repo, '0.1.0', 'darwin', 'arm64', mock({ ...release, assets: [{ name: 'Hosts-Manager-0.2.0-mac-arm64.zip' }, { name: 'Hosts-Manager-0.2.0-mac-arm64.dmg', browser_download_url: 'https://evil.test/attack' }] }));
+  assert.deepEqual(result.download, { filename: 'Hosts-Manager-0.2.0-mac-arm64.dmg', url: 'https://github.com/example/hosts-manager/releases/download/v0.2.0/Hosts-Manager-0.2.0-mac-arm64.dmg' });
+  const zipOnly = await checkRelease(repo, '0.1.0', 'darwin', 'arm64', mock({ ...release, assets: [{ name: 'Hosts-Manager-0.2.0-mac-arm64.zip' }] }));
+  assert.equal(zipOnly.status, 'available'); assert.equal(zipOnly.download, undefined);
+});
 test('offline checks, missing downloads, drafts, rate limits and missing configuration report clearly', async () => {
   assert.equal((await checkRelease(undefined, '0.1.0', 'darwin', 'arm64', mock(release))).status, 'unconfigured');
   assert.equal((await checkRelease(repo, '0.2.0', 'darwin', 'arm64', mock(release))).status, 'current');

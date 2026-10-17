@@ -10,8 +10,10 @@ export interface HostsApi {
   apply(state: HostsState): Promise<ApplyResult>;
   checkUpdates(): Promise<UpdateStatus>;
   openUpdate(): Promise<void>;
+  onUpdateDownload(callback: (progress: UpdateDownloadProgress) => void): () => void;
   onUpdateAvailable(callback: (update: UpdateStatus) => void): () => void;
   onUpdate(callback: (update: StateUpdate) => void): () => void;
 }
 
-export interface UpdateStatus { status: 'unconfigured' | 'current' | 'available' | 'error'; currentVersion: string; version?: string; url?: string; message: string }
+export interface UpdateStatus { status: 'unconfigured' | 'current' | 'available' | 'error'; currentVersion: string; version?: string; url?: string; download?: { url: string; filename: string }; message: string }
+export interface UpdateDownloadProgress { status: 'downloading' | 'opening' | 'complete' | 'error'; received: number; total?: number; message: string }

@@ -28,7 +28,7 @@ Available for macOS, Windows, and Linux, with light and dark themes that follow 
 - Edit **System** directly and save changes to your main hosts file.
 - Keep drafts while switching groups. Unsaved edits show a red sidebar dot and a badge beside the title.
 - Manage hosts globally from the sidebar or system tray.
-- Check GitHub Releases for newer versions and open the download page.
+- Check GitHub Releases for newer versions; download and open the matching macOS DMG directly.
 
 ## Installation
 
@@ -184,7 +184,7 @@ Packages are written to `release/`. macOS ARM64 packaging must run on an ARM64 M
 
 ## Updates and releases
 
-Packaged builds check the public GitHub release repository on startup and every hour. Check manually with **Hosts Manager → Check for Updates…** on macOS, **Help → Check for Updates…** on Windows/Linux, or the tray menu. The installed version appears beneath the app name at the top of the sidebar. Menu checks show a native dialog with the result and a **Download Update** button when a newer compatible release is available. Downloading and replacing the app remain manual.
+Packaged builds check the public GitHub release repository on startup and every hour. Check manually with **Hosts Manager → Check for Updates…** on macOS, **Help → Check for Updates…** on Windows/Linux, or the tray menu. The installed version appears beneath the app name at the top of the sidebar. Menu checks show a native dialog with the result and a **Download Update** button when a newer compatible release is available. On macOS, **Download Update** downloads the matching DMG into a temporary folder, shows progress in the app, and opens the DMG. Save drafts, quit Hosts Manager through the tray, then drag the new app into Applications and replace the old version. Failed downloads can be retried. Windows/Linux and macOS releases with only a ZIP open the GitHub release page instead. Older installed versions still open the release page until replaced with a build containing this behavior.
 
 `release-config.json` sets the public release repository. Packaging can override it using `HOSTS_MANAGER_RELEASE_REPOSITORY=owner/repository`. GitHub Actions configures it from the current repository automatically. No GitHub token is embedded in the app; private release repositories are not supported.
 

@@ -37,7 +37,10 @@ export async function checkRelease(repository: string | undefined, currentVersio
     const assets = Array.isArray(data.assets) ? data.assets : [];
     const compatible = assets.some(asset => asset && typeof asset.name === 'string' && (extensions.some(extension => asset.name === `${prefix}.${extension}`) || (platform === 'win32' && ['-installer.exe', '-app.zip'].some(suffix => asset.name === prefix + suffix))));
     if (!compatible) return { status: 'error', currentVersion, message: 'A newer release exists, but its download for this computer is not available yet.' };
-    return { status: 'available', currentVersion, version: data.tag_name.replace(/^v/, ''), url: `https://github.com/${repo}/releases/tag/${encodeURIComponent(data.tag_name)}`, message: `Hosts Manager ${data.tag_name.replace(/^v/, '')} is available.` };
+    const filename = `${prefix}.dmg`;
+    const download = platform === 'darwin' && assets.some(asset => asset && asset.name === filename)
+      ? { filename, url: `https://github.com/${repo}/releases/download/${encodeURIComponent(data.tag_name)}/${encodeURIComponent(filename)}` } : undefined;
+    return { status: 'available', currentVersion, version: data.tag_name.replace(/^v/, ''), url: `https://github.com/${repo}/releases/tag/${encodeURIComponent(data.tag_name)}`, download, message: `Hosts Manager ${data.tag_name.replace(/^v/, '')} is available.` };
   } catch (error) {
     return { status: 'error', currentVersion, message: error instanceof Error && error.name !== 'TimeoutError' ? `Could not check for updates: ${error.message}` : 'The update check timed out. Try again later.' };
   }
